@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Sample dataset (you can expand later)
+data = {
+    'song': ['Shape of You', 'Believer', 'Closer', 'Faded', 'Senorita'],
+    'artist': ['Ed Sheeran', 'Imagine Dragons', 'Chainsmokers', 'Alan Walker', 'Shawn Mendes'],
+    'genre': ['Pop', 'Rock', 'Pop', 'EDM', 'Pop']
+}
+
+df = pd.DataFrame(data)
+
+# Convert genre to dummy variables
+genre_dummies = pd.get_dummies(df['genre'])
+
+# Compute similarity
+similarity = cosine_similarity(genre_dummies)
+
+def recommend(song_name):
+    if song_name not in df['song'].values:
+        return "Song not found"
+
+    index = df[df['song'] == song_name].index[0]
+    scores = list(enumerate(similarity[index]))
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)
+
+    recommendations = []
+    for i in scores[1:4]:
+        recommendations.append(df.iloc[i[0]]['song'])
+
+    return recommendations
+
+# Test
+song = input("Enter a song name: ")
+print("Recommended Songs:", recommend(song))
